@@ -3,6 +3,7 @@ package Req
 import (
 	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
+	"fmt"
 )
 
 
@@ -24,7 +25,7 @@ func DaySignReq(Day int32) ([]byte) {
 
 //发送消息
 func Send(MsgID int32, Data []byte) []byte {
-
+	fmt.Println("消息id",MsgID,"开始发送")
 	MsgSend := &AutoMsg.MsgBaseRev{
 		MsgId: MsgID,
 		Data:  Data,

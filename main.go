@@ -17,18 +17,31 @@ import (
 
 	"WebSocket/Model"
 	"WebSocket/Common"
-	"WebSocket/Redis"
 )
 
-var addr = flag.String("ws", "slb.ckp520.cn:9501", "http service address")
-var httpurl = flag.String("http", "slb.ckp520.cn:9501", "http service address")
+var addr = flag.String("ws", "192.168.31.64:9501", "http service address")
+var httpurl = flag.String("http", "192.168.31.64:9501", "http service address")
 var start = flag.Int("start", 3000, "key start")
 var end = flag.Int("end", 3001, "key end")
 var arr [30000]*websocket.Conn
 
 //var ws1 *websocket.Conn
 //var ws2 *websocket.Conn
+type timeHandler struct {
+	format string
+}
 
+func (th *timeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	tm := time.Now().Format(th.format)
+	w.Write([]byte("The time is: " + tm))
+}
+// 路由处理方法 类似各种Controller里的各种Action
+func TestHandler(w http.ResponseWriter, r *http.Request){
+	w.Write([]byte("hhhh"))
+
+	go Test(arr[3000])
+	fmt.Println("not found")
+}
 func main() {
 	flag.Parse()
 
@@ -45,9 +58,20 @@ func main() {
 		//var msg1 [3072]byte
 		go ForRead(i)
 	}
-	for {
-		time.Sleep(time.Second * 1)
-	}
+	//for {
+	//	time.Sleep(time.Second * 1)
+	//}
+	mux := http.NewServeMux()
+
+	th := &timeHandler{format: time.RFC1123}
+	mux.Handle("/time", th)
+
+	mux.HandleFunc("/test", 	TestHandler)
+
+	log.Println("Listening...")
+	http.ListenAndServe(":3000", mux)
+
+
 
 }
 func ForRead(i int) {
@@ -105,14 +129,14 @@ func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
 		}
 		break
 	case 1066:
-		Redis.Insert(res.GetData())
+		//Redis.Insert(res.GetData())
 		strJoin := JoinGameResult(res.GetData())
 		fmt.Println(strJoin.GetMission())
 		//测试请求 SignReq
 		data := Req.SignReq()
 		go timeWriter(ws, data)
-		//str_1106 := ShopAllReq(1106)
-		//go timeWriterSend(ws, str_1106)
+		str_1106 := ShopAllReq(1106)
+		go timeWriterSend(ws, str_1106)
 		var Name = Common.GetRandomString(3)
 		var str = Req.CreateCompanyReq(Name)
 		go timeWriter(ws, str)
@@ -129,7 +153,12 @@ func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
 			go timeWriter(ws,str)
 		}
 		break
-
+	case 1078:
+		fmt.Println("使用道具返回")
+		msg := Result.UseItemResult(res.GetData())
+		fmt.Println(msg)
+	default:
+		//go Test(ws)
 	}
 }
 
@@ -330,9 +359,37 @@ func timeWriter(conn *websocket.Conn, data []byte) {
 }
 func timeWriterSend(conn *websocket.Conn, data []byte) {
 	for {
-		time.Sleep(time.Microsecond * 1000000)
+		time.Sleep(time.Second*5)
+		//time.Sleep(time.Microsecond * 1000000)
 		fmt.Println("发送时间:", time.Now())
 		websocket.Message.Send(conn, data)
 	}
 }
+
+
+func Test(ws *websocket.Conn) {
+	fmt.Println(111)
+	var ch1 = make(chan int)
+	var ch2 = make(chan int)
+	go f1(ch1)
+	for  {
+		select {
+		case <-ch1:
+			//执行websocket发送
+			fmt.Println("执行使用道具接口")
+			str := Req.UseItemReq(&Req.UseItem{10110,1})
+			go timeWriter(ws,str)
+			fmt.Println("The first case is selected.")
+		case <-ch2:
+			fmt.Println("The second case is selected.")
+		}
+	}
+
+}
+
+func f1(ch chan int) {
+	time.Sleep(time.Second * 5)
+	ch <- 1
+}
+
 

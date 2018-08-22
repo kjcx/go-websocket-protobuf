@@ -1,19 +1,34 @@
 package main
 
 import (
-	"WebSocket/HttpController"
+	"WebSocket/Mgo"
+	"time"
 	"fmt"
-	"strconv"
-	"WebSocket/Redis"
 )
 
 func main() {
-	var i int
-	for i=1;i<11538;i++ {
-		key := strconv.Itoa(i)
-		Token := HttpController.GetToken("192.168.31.232:9501",key)
-		fmt.Println(Token)
-		Redis.InsertToken(key,Token,key)
+	log := &Mgo.Log{
+		Uid:   14,
+		MsgId: 1004,
+		Name:  "使用道具",
+		Param: "参数",
+		Date:  time.Now(),
+		Msg:   "无",
+	}
+	mongo := Mgo.Mongo()
+	Mgo.InsertLog(mongo,log)
+
+	var ch1 = make(chan int)
+	var ch2 = make(chan int)
+	go f1(ch1)
+	go f2(ch2)
+	for  {
+		select {
+		case <-ch1:
+			fmt.Println("The first case is selected.")
+		case <-ch2:
+			fmt.Println("The second case is selected.")
+		}
 	}
 
 }
