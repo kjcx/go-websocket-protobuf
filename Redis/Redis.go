@@ -10,7 +10,7 @@ func InsertToken(Key string ,Token string,Id string) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     "192.168.31.119:6379",
 		Password: "", // no password set
-		DB:       0,  // use default DB
+		DB:       3,  // use default DB
 	})
 
 	pong, err := client.Ping().Result()
