@@ -5,6 +5,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"fmt"
 	"log"
+	"WebSocket/Protobuf"
 )
 
 //发起连接
@@ -19,6 +20,6 @@ func ConnectingReq(MsgID int32, Token string) []byte {
 		log.Fatal("marshaling error: ", err)
 	}
 	fmt.Println(data)
-	return Send(MsgID, data)
+	return SendRev.Send(MsgID, data)
 
 }

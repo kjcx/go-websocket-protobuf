@@ -4,15 +4,15 @@ import (
 	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
 	"log"
+	"fmt"
 	"WebSocket/Mgo"
 	"time"
 	"encoding/json"
-	"fmt"
 )
 
 
 //使用道具返回 1078
-func UseItemResult(Data []byte) *AutoMsg.UseItemResult{
+func UseItemResult(Uid int32,Data []byte) *AutoMsg.UseItemResult{
 	UseItemResult := &AutoMsg.UseItemResult{}
 	err := proto.Unmarshal(Data, UseItemResult)
 	if err != nil {
@@ -22,7 +22,7 @@ func UseItemResult(Data []byte) *AutoMsg.UseItemResult{
 	Param,_ := json.Marshal(UseItemResult)
 
 	log := &Mgo.Log{
-		Uid:   14,
+		Uid:   Uid,
 		MsgId: 1078,
 		Name:  "使用道具返回",
 		Param: string(Param),

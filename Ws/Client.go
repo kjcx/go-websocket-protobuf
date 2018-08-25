@@ -66,10 +66,11 @@ func ForRead(i int) {
 			log.Fatal(err)
 		}
 		fmt.Printf("Received:", msg1, n)
-		res := SendRev.Rev(msg1[:n])
-		fmt.Println(res)
-		fmt.Println(arr[i].Config().Origin)
-		go SwitchMsg(arr[i], res)
+		Origin := arr[i].Config().Origin.String()
+		Uidstr,_ := strconv.Atoi(Origin[4:])
+		Uid := int32(Uidstr)
+		res := SendRev.Rev(Uid,msg1[:n])
+		go SwitchMsg(arr[i],Uid, res)
 
 	}
 }
@@ -86,7 +87,7 @@ func timeWriterSend(conn *websocket.Conn, data []byte) {
 	}
 }
 
-func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
+func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	switch res.GetMsgID() {
 	case 1057:
 		str := Result.ConnectingResult(res.GetData())
@@ -128,12 +129,40 @@ func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
 		break
 	case 1078:
 		fmt.Println("使用道具返回")
-		msg := Result.UseItemResult(res.GetData())
+		msg := Result.UseItemResult(Uid,res.GetData())
 		fmt.Println(msg)
 	case 1059:
 		fmt.Println("创建公司返回")
+		Result.CreateCompanyResult(res.GetData())
 	case 1058:
 		Result.CreateBuildResult(res.GetData())
+	case 1109:
+		fmt.Println("刷新商城商品返回")
+		Result.RefDropShopResult(res.GetData())
+	case 1069:
+		fmt.Println("出售道具返回")
+		Result.SellItemResult(Uid,res.GetData())
+	case 1055:
+		fmt.Println("改变时装返回")
+		Result.ChangeAvatarResult(Uid,res.GetData())
+	case 1023:
+		fmt.Println("购买时装返回")
+		Result.ModelClothesResult(Uid,res.GetData())
+	case 1141:
+		fmt.Println("更改头像返回")
+		Result.UpdateRoleInfoIconResult(Uid,res.GetData())
+	case 1016:
+		fmt.Println("搜索好友返回")
+		Result.FriendSearchResult(Uid,res.GetData())
+	case 1011:
+		fmt.Println("申请好友返回")
+		Result.FriendApplyResult(Uid,res.GetData())
+	case 1013:
+		fmt.Println("批量申请好友返回")
+		Result.FriendAddResult(Uid,res.GetData())
+	case 1012:
+		fmt.Println("删除好友返回")
+		Result.FriendRemoveResult(Uid,res.GetData())
 	default:
 		//go Test(ws)
 	}

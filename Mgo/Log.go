@@ -19,3 +19,9 @@ func InsertLog(session *mgo.Session, Data *Log){
 	mongo := session.DB("test").C("GoLog");
 	mongo.Insert(Data)
 }
+
+type LogResult struct {
+	MsgId int32
+	Data []byte
+}
+

@@ -3,6 +3,7 @@ package Req
 import (
 	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
+	"WebSocket/Protobuf"
 )
 
 type UpdateRoleInfoName struct {
@@ -14,5 +15,5 @@ func UpdateRoleInfoNameReq(UpdateRoleInfoName *UpdateRoleInfoName) []byte {
 		RoleName:UpdateRoleInfoName.RoleName,
 	}
 	Data,_ := proto.Marshal(UpdateName)
-	return Send(1103,Data)
+	return SendRev.Send(1103,Data)
 }
