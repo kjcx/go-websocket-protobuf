@@ -41,19 +41,25 @@ func Connect(i int,addr string,httpurl string) *websocket.Conn {
 	origin := fmt.Sprintf("Uid:%d",i)
 	fmt.Println(strconv.Itoa(i))
 	Token := Common.HttpGet(httpurl,strconv.Itoa(i))
-	var str = Req.ConnectingReq(1004, Token)
-	fmt.Println(str)
-	var err error
-	arr[i], err = websocket.Dial(url, "", origin)
+	if Token != "" {
+		var str = Req.ConnectingReq(1004, Token)
+		fmt.Println(str)
+		var err error
+		arr[i], err = websocket.Dial(url, "", origin)
 
-	if err != nil {
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("arr=》")
+		fmt.Println(arr[i].Config().Origin)
+
+		go Send(arr[i], str)
+		return arr[i]
+	}else {
+		fmt.Println("获取token失败")
+		return arr[i]
 	}
-	fmt.Println("arr=》")
-	fmt.Println(arr[i].Config().Origin)
 
-	go Send(arr[i], str)
-	return arr[i]
 }
 
 
@@ -62,14 +68,18 @@ func ForRead(i int) {
 		var msg1 = make([]byte, 5120)
 		var n int
 		var err error
-		if n, err = arr[i].Read(msg1); err != nil {
-			log.Fatal(err)
+		if arr[i].IsClientConn() {
+			if n, err = arr[i].Read(msg1); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("Received:", msg1, n)
+			res := SendRev.Rev(msg1[:n])
+			fmt.Println(res)
+			fmt.Println(arr[i].Config().Origin)
+			go SwitchMsg(arr[i], res)
+		} else {
+			fmt.Println("连接已断开")
 		}
-		fmt.Printf("Received:", msg1, n)
-		res := SendRev.Rev(msg1[:n])
-		fmt.Println(res)
-		fmt.Println(arr[i].Config().Origin)
-		go SwitchMsg(arr[i], res)
 
 	}
 }
@@ -79,9 +89,9 @@ func Send(conn *websocket.Conn, data []byte) {
 }
 func timeWriterSend(conn *websocket.Conn, data []byte) {
 	for {
-		time.Sleep(time.Second*5)
+		time.Sleep(time.Second*1)
 		//time.Sleep(time.Microsecond * 1000000)
-		fmt.Println("发送时间:", time.Now())
+		fmt.Println(conn.Config().Origin,"发送时间:", time.Now())
 		websocket.Message.Send(conn, data)
 	}
 }
@@ -110,9 +120,9 @@ func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
 		go Send(ws, data)
 		str_1106 := Req.ShopAllReq(1106)
 		go timeWriterSend(ws, str_1106)
-		var Name = Common.GetRandomString(3)
-		var str = Req.CreateCompanyReq(Name)
-		go Send(ws, str)
+		//var Name = Common.GetRandomString(3)
+		//var str = Req.CreateCompanyReq(Name)
+		//go Send(ws, str)
 		break
 	case 1145:
 		str_1145 := Result.ShopAllResult(res.GetData())

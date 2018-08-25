@@ -4,9 +4,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/proto/test_proto"
 	"fmt"
-	"WebSocket/Mgo"
-	"strconv"
-	"time"
 )
 
 //发送消息
@@ -30,20 +27,20 @@ func Rev(Data []byte) *AutoMsg.MsgBaseSend {
 	MsgID := MsgRev.GetMsgID()
 	value :=  MsgRev.GetResult()
 	if value > 0{
-		mgo := Mgo.Mongo()
-		result :=Mgo.WsResult(mgo,strconv.Itoa(int(value)))
-		Name := Mgo.GetMsg(mgo,MsgID)
-		log := &Mgo.Log{
-			Uid:   14,
-			MsgId: MsgID,
-			Name:  Name,
-			Param: "",
-			Date:  time.Now(),
-			Msg:   result.Msg,
-		}
-		mongo := Mgo.Mongo()
-		Mgo.InsertLog(mongo,log)
-		fmt.Println("有错误消息")
+		//mgo := Mgo.Mongo()
+		//result :=Mgo.WsResult(mgo,strconv.Itoa(int(value)))
+		//Name := Mgo.GetMsg(mgo,MsgID)
+		//log := &Mgo.Log{
+		//	Uid:   14,
+		//	MsgId: MsgID,
+		//	Name:  Name,
+		//	Param: "",
+		//	Date:  time.Now(),
+		//	Msg:   result.Msg,
+		//}
+		//mongo := Mgo.Mongo()
+		//Mgo.InsertLog(mongo,log)
+		//fmt.Println("有错误消息")
 
 	}
 
