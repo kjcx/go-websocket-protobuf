@@ -41,10 +41,10 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 
-var addr = flag.String("ws", "ckp_server2.ckp520.cn:9501", "http service address")
-var httpurl = flag.String("http", "ckp_server2.ckp520.cn:9501", "http service address")
-var start = flag.Int("start", 2000, "key start")
-var end = flag.Int("end", 3000, "key end")
+var addr = flag.String("ws", "www.ckp520.cn:9501", "http service address")
+var httpurl = flag.String("http", "www.ckp520.cn:9501", "http service address")
+var start = flag.Int("start", 14, "key start")
+var end = flag.Int("end", 15, "key end")
 var arr [10]*websocket.Conn
 func main() {
 	flag.Parse()
@@ -54,6 +54,9 @@ func main() {
 	router.GET("/hello/:name", Hello)
 	router.GET("/CreateBuildReq/:Pos/:AreaId/:ShopType", HttpController.CreateBuildReq)
 	router.GET("/UpdateRoleInfoNameReq/:name",HttpController.UpdateRoleInfoNameReq)
+	router.GET("/NpcRelationAdvanceReq/:name",HttpController.NpcRelationAdvanceReq)
+	router.GET("/AddNpcFavorabilityReq/:name",HttpController.AddNpcFavorabilityReq)
+	router.GET("/UseItemReq/:name",HttpController.UseItemReq)
 
 	log.Fatal(http.ListenAndServe(":3001", router))
 	//mux := http.NewServeMux()

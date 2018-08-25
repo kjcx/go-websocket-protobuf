@@ -4,6 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"log"
 	"github.com/golang/protobuf/proto/test_proto"
+	"WebSocket/Protobuf"
 )
 
 
@@ -23,5 +24,5 @@ func UseItemReq(UseItem *UseItem) []byte{
 	if err!=nil{
 		log.Fatal("UseItemReq解析失败")
 	}
-	return Send(1015,Data)
+	return SendRev.Send(1015,Data)
 }

@@ -3,6 +3,7 @@ package Req
 import (
 	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
+	"WebSocket/Protobuf"
 )
 
 func main() {
@@ -14,5 +15,5 @@ func CreateCompanyReq(Name string) []byte{
 		Name:Name,
 	}
 	Data,_ := proto.Marshal(CreateCompanyReq)
-	return Send(1006,Data)
+	return SendRev.Send(1006,Data)
 }

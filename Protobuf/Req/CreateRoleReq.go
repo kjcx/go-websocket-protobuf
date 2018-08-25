@@ -4,6 +4,7 @@ import (
 	"WebSocket/Common"
 	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
+	"WebSocket/Protobuf"
 )
 
 //创建角色 1007
@@ -14,5 +15,5 @@ func CreateRoleReq(MsgId int32) []byte {
 		Sex:  1,
 	}
 	data, _ := proto.Marshal(CreateRoleReq)
-	return Send(MsgId, data)
+	return SendRev.Send(MsgId, data)
 }

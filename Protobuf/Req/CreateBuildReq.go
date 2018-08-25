@@ -3,6 +3,7 @@ package Req
 import (
 	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
+	"WebSocket/Protobuf"
 )
 //创建店铺结构
 type CreateBuild struct {
@@ -18,6 +19,6 @@ func CreateBuildReq(CreateBuild *CreateBuild)[]byte {
 		ShopType:CreateBuild.ShopType,
 	}
 	Data,_ := proto.Marshal(CreateBuildReq)
-	return Send(1005,Data)
+	return SendRev.Send(1005,Data)
 
 }

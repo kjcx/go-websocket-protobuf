@@ -12,12 +12,14 @@ import (
 	"WebSocket/Protobuf/Result"
 	"WebSocket/Common"
 	"WebSocket/Model"
+	"encoding/json"
 )
 
 var arr   [30000]*websocket.Conn
 func GetWebSocket() [30000]*websocket.Conn{
 	return arr
 }
+var chan_req = make(chan []byte)
 //初始化ws
 func Init(addr string,httpurl string,start int,end int) {
 	fmt.Println("websocket：", addr)
@@ -31,6 +33,7 @@ func Init(addr string,httpurl string,start int,end int) {
 		Connect(i,addr,httpurl)//发起连接
 		go ForRead(i)//协程读取内容
 	}
+	go ChanMsgRead(chan_req)
 }
 //发起连接
 func Connect(i int,addr string,httpurl string) *websocket.Conn {
@@ -68,20 +71,22 @@ func ForRead(i int) {
 		var msg1 = make([]byte, 5120)
 		var n int
 		var err error
-		if arr[i].IsClientConn() {
-			if n, err = arr[i].Read(msg1); err != nil {
-				log.Fatal(err)
-			}
-			fmt.Printf("Received:", msg1, n)
-			res := SendRev.Rev(msg1[:n])
-			fmt.Println(res)
-			fmt.Println(arr[i].Config().Origin)
-			go SwitchMsg(arr[i], res)
-		} else {
-			fmt.Println("连接已断开")
+		if n, err = arr[i].Read(msg1); err != nil {
+			log.Fatal("接收信息出错",err.Error())
 		}
 
+		fmt.Printf("Received:", n ,msg1)
+		Origin := arr[i].Config().Origin.String()
+		Uidstr,_ := strconv.Atoi(Origin[4:])
+		Uid := int32(Uidstr)
+		fmt.Println("uid:",Uid)
+		res := SendRev.Rev(Uid,msg1[:n])
+		go SwitchMsg(arr[i],Uid, res)
+
 	}
+
+
+
 }
 
 func Send(conn *websocket.Conn, data []byte) {
@@ -95,8 +100,25 @@ func timeWriterSend(conn *websocket.Conn, data []byte) {
 		websocket.Message.Send(conn, data)
 	}
 }
+//写入信息
+func ChanMsgWrite(Data []byte){
+	fmt.Println(Data)
+	chan_req <- Data
+}
 
-func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
+func ChanMsgRead(chan_req chan []byte){
+	for  {
+		select {
+		case msg :=<-chan_req:
+			go Send(arr[14],msg)
+			//执行websocket发送
+			fmt.Println("执行使用道具接口")
+			fmt.Println("The first case is selected.")
+
+		}
+	}
+}
+func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	switch res.GetMsgID() {
 	case 1057:
 		str := Result.ConnectingResult(res.GetData())
@@ -111,15 +133,19 @@ func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
 			go Send(ws, str_role)
 		}
 		break
+	case 1060:
+		str_JoinGamReq := Req.JoinGameReq(1012)
+		go Send(ws, str_JoinGamReq)
 	case 1066:
 		//Redis.Insert(res.GetData())
 		strJoin := Result.JoinGameResult(res.GetData())
-		fmt.Println(strJoin.GetMission())
+		d,_:= json.Marshal(strJoin)
+		fmt.Println(string(d))
 		//测试请求 SignReq
 		data := Req.SignReq()
 		go Send(ws, data)
-		str_1106 := Req.ShopAllReq(1106)
-		go timeWriterSend(ws, str_1106)
+		//str_1106 := Req.ShopAllReq(1106)
+		//go timeWriterSend(ws, str_1106)
 		//var Name = Common.GetRandomString(3)
 		//var str = Req.CreateCompanyReq(Name)
 		//go Send(ws, str)
@@ -138,12 +164,44 @@ func SwitchMsg(ws *websocket.Conn, res *AutoMsg.MsgBaseSend) {
 		break
 	case 1078:
 		fmt.Println("使用道具返回")
-		msg := Result.UseItemResult(res.GetData())
+		msg := Result.UseItemResult(Uid,res.GetData())
 		fmt.Println(msg)
 	case 1059:
 		fmt.Println("创建公司返回")
+		Result.CreateCompanyResult(res.GetData())
 	case 1058:
 		Result.CreateBuildResult(res.GetData())
+	case 1109:
+		fmt.Println("刷新商城商品返回")
+		Result.RefDropShopResult(res.GetData())
+	case 1069:
+		fmt.Println("出售道具返回")
+		Result.SellItemResult(Uid,res.GetData())
+	case 1055:
+		fmt.Println("改变时装返回")
+		Result.ChangeAvatarResult(Uid,res.GetData())
+	case 1023:
+		fmt.Println("购买时装返回")
+		Result.ModelClothesResult(Uid,res.GetData())
+	case 1141:
+		fmt.Println("更改头像返回")
+		Result.UpdateRoleInfoIconResult(Uid,res.GetData())
+	case 1016:
+		fmt.Println("搜索好友返回")
+		Result.FriendSearchResult(Uid,res.GetData())
+	case 1011:
+		fmt.Println("申请好友返回")
+		Result.FriendApplyResult(Uid,res.GetData())
+	case 1013:
+		fmt.Println("批量申请好友返回")
+		Result.FriendAddResult(Uid,res.GetData())
+	case 1012:
+		fmt.Println("删除好友返回")
+		Result.FriendRemoveResult(Uid,res.GetData())
+	case 1133:
+		fmt.Println("提升好感度返回")
+		Result.AddNpcRelationAdvanceResult(Uid,res.GetData())
+
 	default:
 		//go Test(ws)
 	}
