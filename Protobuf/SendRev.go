@@ -10,24 +10,12 @@ import (
 )
 
 //发送消息
-func Send(MsgID int32, Data []byte) []byte {
+func Send(MsgID int32,Data []byte) []byte {
 	MsgSend := &AutoMsg.MsgBaseRev{
 		MsgId: MsgID,
 		Data:  Data,
 	}
 	data, _ := proto.Marshal(MsgSend)
-	mongo := Mgo.Mongo()
-	Name := Mgo.GetMsg(mongo,MsgID)
-	//插入日志
-	log := &Mgo.Log{
-		Uid:14,
-		MsgId: MsgID,
-		Name: Name,
-		Param: "",
-		Date: time.Now(),
-		Msg: "",
-	}
-	Mgo.InsertLog(mongo,log)
 	return data
 }
 //接收数据
@@ -53,7 +41,7 @@ func Rev(Uid int32,Data []byte) *AutoMsg.MsgBaseSend {
 			Date:  time.Now(),
 			Msg:   result.Msg,
 		}
-		Mgo.InsertLog(mongo,log)
+		log.InsertLog()
 		fmt.Println("有错误消息")
 	}else{
 

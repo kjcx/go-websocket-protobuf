@@ -20,6 +20,5 @@ func FriendApplyClearResult(Uid int32,Data []byte) {
 		Date:time.Now(),
 		Msg:"无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
 }

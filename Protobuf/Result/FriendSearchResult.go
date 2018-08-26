@@ -21,7 +21,6 @@ func FriendSearchResult(Uid int32,Data []byte) *AutoMsg.FriendSearchResult{
 		Date:time.Now(),
 		Msg:"无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
 	return FriendSearchResult
 }

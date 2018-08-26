@@ -24,7 +24,7 @@ func (th *timeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("The time is: " + tm))
 }
 // 路由处理方法 类似各种Controller里的各种Action
-func TestHandler(w http.ResponseWriter, r *http.Request ,){
+func TestHandler(w http.ResponseWriter, r *http.Request ,ps httprouter.Params){
 	w.Write([]byte("hhhh"))
 
 	fmt.Println("not found")
@@ -50,11 +50,16 @@ func main() {
 	router := httprouter.New()
 	router.GET("/", Index)
 	router.GET("/hello/:name", Hello)
-	router.GET("/CreateBuildReq/:Pos/:AreaId/:ShopType", HttpController.CreateBuildReq)
-	router.GET("/UpdateRoleInfoNameReq/:name",HttpController.UpdateRoleInfoNameReq)
-	router.GET("/NpcRelationAdvanceReq/:name",HttpController.NpcRelationAdvanceReq)
-	router.GET("/AddNpcFavorabilityReq/:name",HttpController.AddNpcFavorabilityReq)
-	router.GET("/UseItemReq/:name",HttpController.UseItemReq)
+	router.POST("/CreateBuildReq/:name", HttpController.CreateBuildReq)
+	router.POST("/UpdateRoleInfoNameReq/:name",HttpController.UpdateRoleInfoNameReq)
+	router.POST("/NpcRelationAdvanceReq/:name",HttpController.NpcRelationAdvanceReq)
+	router.POST("/AddNpcFavorabilityReq/:name",HttpController.AddNpcFavorabilityReq)
+	router.GET("/NpcFavorabilityReq/:name",HttpController.NpcFavorabilityReq)
+	router.POST("/UseItemReq/:name",HttpController.UseItemReq)
+	router.POST("/UnlockNpcReq/:name",HttpController.UnlockNpcReq)
+	router.POST("/RefStaffReq/:name",HttpController.RefStaffReq)
+	router.POST("/ComeOutEmployeeReq/:name",HttpController.ComeOutEmployeeReq)
+	router.GET("/LoadStaffReq/:name",HttpController.LoadStaffReq)
 
 	log.Fatal(http.ListenAndServe(":3001", router))
 	//mux := http.NewServeMux()

@@ -21,7 +21,6 @@ func ChangeAvatarResult(Uid int32,Data []byte) *AutoMsg.ChangeAvatarResult {
 		Date:time.Now(),
 		Msg:"无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
 	return ChangeAvatarResult
 }

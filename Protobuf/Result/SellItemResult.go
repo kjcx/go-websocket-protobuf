@@ -20,7 +20,6 @@ func SellItemResult(Uid int32 ,Data []byte) *AutoMsg.SellItemResult {
 		Date:time.Now(),
 		Msg:"无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
 	return SellItemResult
 }

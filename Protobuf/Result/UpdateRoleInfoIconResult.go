@@ -20,7 +20,6 @@ func UpdateRoleInfoIconResult(Uid int32,Data []byte) *AutoMsg.UpdateRoleInfoIcon
 		Date:time.Now(),
 		Msg:"无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
 	return  UpdateRoleInfoIconResult
 }

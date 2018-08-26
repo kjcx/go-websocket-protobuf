@@ -19,7 +19,12 @@ var arr   [30000]*websocket.Conn
 func GetWebSocket() [30000]*websocket.Conn{
 	return arr
 }
-var chan_req = make(chan []byte)
+
+type SendChan struct {
+	Uid int32
+	Data []byte
+}
+var chan_req = make(chan SendChan)
 //初始化ws
 func Init(addr string,httpurl string,start int,end int) {
 	fmt.Println("websocket：", addr)
@@ -101,20 +106,17 @@ func timeWriterSend(conn *websocket.Conn, data []byte) {
 	}
 }
 //写入信息
-func ChanMsgWrite(Data []byte){
-	fmt.Println(Data)
+func ChanMsgWrite(Data SendChan){
 	chan_req <- Data
 }
 
-func ChanMsgRead(chan_req chan []byte){
+func ChanMsgRead(chan_req chan SendChan){
 	for  {
 		select {
 		case msg :=<-chan_req:
-			go Send(arr[14],msg)
+			go Send(arr[msg.Uid],msg.Data)
 			//执行websocket发送
-			fmt.Println("执行使用道具接口")
-			fmt.Println("The first case is selected.")
-
+			fmt.Println("执行使用道具接口",msg.Uid)
 		}
 	}
 }
@@ -125,24 +127,24 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 		RoleList := str.GetRoleLists()[0]
 		fmt.Println("角色id", RoleList.GetRoleId())
 		if RoleList.GetRoleId() != "" {
-			str_JoinGamReq := Req.JoinGameReq(1012)
+			str_JoinGamReq := Req.JoinGameReq(Uid,1012)
 			go Send(ws, str_JoinGamReq)
 		} else {
 			//创建角色请求
-			var str_role = Req.CreateRoleReq(1007)
+			var str_role = Req.CreateRoleReq(Uid,1007)
 			go Send(ws, str_role)
 		}
 		break
 	case 1060:
-		str_JoinGamReq := Req.JoinGameReq(1012)
+		str_JoinGamReq := Req.JoinGameReq(Uid,1012)
 		go Send(ws, str_JoinGamReq)
 	case 1066:
 		//Redis.Insert(res.GetData())
-		strJoin := Result.JoinGameResult(res.GetData())
-		d,_:= json.Marshal(strJoin)
+		strJoin := Result.JoinGameResult(Uid,res.GetData())
+		d,_:= json.MarshalIndent(strJoin,""," ")
 		fmt.Println(string(d))
 		//测试请求 SignReq
-		data := Req.SignReq()
+		data := Req.SignReq(Uid)
 		go Send(ws, data)
 		//str_1106 := Req.ShopAllReq(1106)
 		//go timeWriterSend(ws, str_1106)
@@ -151,14 +153,14 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 		//go Send(ws, str)
 		break
 	case 1145:
-		str_1145 := Result.ShopAllResult(res.GetData())
+		str_1145 := Result.ShopAllResult(Uid,res.GetData())
 		fmt.Println(str_1145)
 	case 1168:
 		fmt.Println("MsgId:1168")
-		msg := Result.SignResult(res.GetData())
+		msg := Result.SignResult(Uid,res.GetData())
 		_,Day :=  Model.Sign(msg)
 		if Day >0  {
-			str := Model.DaySign(Day)
+			str := Model.DaySign(Uid,Day)
 			go Send(ws,str)
 		}
 		break
@@ -168,18 +170,21 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 		fmt.Println(msg)
 	case 1059:
 		fmt.Println("创建公司返回")
-		Result.CreateCompanyResult(res.GetData())
+		Result.CreateCompanyResult(Uid,res.GetData())
 	case 1058:
-		Result.CreateBuildResult(res.GetData())
+		Result.CreateBuildResult(Uid,res.GetData())
 	case 1109:
 		fmt.Println("刷新商城商品返回")
-		Result.RefDropShopResult(res.GetData())
+		Result.RefDropShopResult(Uid,res.GetData())
 	case 1069:
 		fmt.Println("出售道具返回")
 		Result.SellItemResult(Uid,res.GetData())
 	case 1055:
 		fmt.Println("改变时装返回")
 		Result.ChangeAvatarResult(Uid,res.GetData())
+	case 1142:
+		fmt.Println("修改角色名称返回")
+		Result.UpdateRoleInfoNameResult(Uid,res.GetData())
 	case 1023:
 		fmt.Println("购买时装返回")
 		Result.ModelClothesResult(Uid,res.GetData())
@@ -201,7 +206,21 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	case 1133:
 		fmt.Println("提升好感度返回")
 		Result.AddNpcRelationAdvanceResult(Uid,res.GetData())
-
+	case 2026:
+		fmt.Println("解锁npc返回")
+		Result.UnlockNpcResult(Uid,res.GetData())
+	case 1037:
+		fmt.Println("加载npc好感度返回")
+		Result.NpcFavorabilityResult(Uid,res.GetData())
+	case 1117:
+		fmt.Println("招聘返回")
+		Result.RefStaffResult(Uid,res.GetData())
+	case 1126:
+		fmt.Println("调入调出员工返回")
+		Result.ComeOutEmployeeResult(Uid,res.GetData())
+	case 1118:
+		fmt.Println("加载员工返回")
+		Result.LoadStaffResult(Uid,res.GetData())
 	default:
 		//go Test(ws)
 	}

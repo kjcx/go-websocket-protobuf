@@ -8,25 +8,26 @@ import (
 	"WebSocket/Mgo"
 	"time"
 )
-type ModelClothes struct {
-	Id []int32
+type UnlockNpc struct {
+	NpcId int32
 }
-//购买时装 1150
-func ModelClothesReq(Uid int32,ModelClothes *ModelClothes) []byte {
-	ModelClothesReq := &AutoMsg.ModelClothesReq{
-		Id: ModelClothes.Id,
+//解锁npc
+func UnlockNpcReq(Uid int32,UnlockNpc *UnlockNpc) []byte{
+	UnlockNpcReq := &AutoMsg.UnlockNpcReq{
+		NpcId: UnlockNpc.NpcId,
 	}
-	Data,_ := proto.Marshal(ModelClothesReq)
+	Data,_ := proto.Marshal(UnlockNpcReq)
 	Param,_ := json.Marshal(LoadStaffReq)
 	//插入日志
 	log := &Mgo.Log{
 		Uid:Uid,
-		MsgId: 1150,
-		Name: "购买时装请求",
+		MsgId: 2025,
+		Name: "解锁npc请求",
 		Param: string(Param),
 		Date: time.Now(),
 		Msg: "",
 	}
 	log.InsertLog()
-	return SendRev.Send(1150,Data)
+	return SendRev.Send(2025,Data)
+
 }

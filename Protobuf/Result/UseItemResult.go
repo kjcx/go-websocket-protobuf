@@ -20,7 +20,6 @@ func UseItemResult(Uid int32,Data []byte) *AutoMsg.UseItemResult{
 	}
 	fmt.Println(UseItemResult)
 	Param,_ := json.Marshal(UseItemResult)
-
 	log := &Mgo.Log{
 		Uid:   Uid,
 		MsgId: 1078,
@@ -29,7 +28,6 @@ func UseItemResult(Uid int32,Data []byte) *AutoMsg.UseItemResult{
 		Date:  time.Now(),
 		Msg:   "无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
 	return UseItemResult
 }

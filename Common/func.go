@@ -4,10 +4,15 @@ import (
 	"math/rand"
 	"time"
 	"fmt"
-	"net/http"
 	"io/ioutil"
 	"encoding/json"
 	"log"
+	"io"
+	//"github.com/julienschmidt/httprouter"
+	//"strconv"
+	"net/http"
+	"github.com/julienschmidt/httprouter"
+	"strconv"
 )
 
 func main() {
@@ -67,11 +72,39 @@ func HttpGet(httpurl string,key string) string {
 		//fmt.Println(L.Data.Token)
 		//fmt.Println(L.Msg)
 	}
-
-
-
-
-
+}
+//http参数
+type Param struct {
+	Uid int32
+	Body []byte
+}
+type HttpParam struct {
+	R *http.Request
+	Ps httprouter.Params
+}
+//解析请求的参数
+func (HttpParam *HttpParam) GetParam() *Param{
+	Name := HttpParam.Ps.ByName("name")
+	Nameint,_ := strconv.Atoi(Name)
+	Uid := int32(Nameint)
+	Param := &Param{}
+	Param.Uid = Uid
+	Body := Decode(HttpParam.R.Body)
+	Param.Body = Body
+	return Param
+}
+//解析body
+func Decode(Body io.Reader) []byte {
+	body, err := ioutil.ReadAll(Body)
+	if err != nil {
+		fmt.Printf("read body err, %v\n", err)
+	}
+	return body
+}
+//格式化json打印
+func JsonFmt(st interface{}) string{
+	str,_ :=json.MarshalIndent(st,""," ")
+	return string(str)
 }
 //通道发送消息
 func ReqChan(ch chan string,Str string) {

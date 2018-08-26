@@ -5,13 +5,18 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"WebSocket/Protobuf/Req"
 	"fmt"
+	"WebSocket/Common"
+	"encoding/json"
 	"WebSocket/Ws"
 )
 
 func UpdateRoleInfoNameReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	RoleName := ps.ByName("name")
-	str := Req.UpdateRoleInfoNameReq(&Req.UpdateRoleInfoName{RoleName: RoleName})
+	param := Common.HttpParam{R: r, Ps: ps}
+	UpdateRoleInfoName := &Req.UpdateRoleInfoName{}
+	json.Unmarshal(param.GetParam().Body,UpdateRoleInfoName)
+	str := Req.UpdateRoleInfoNameReq(param.GetParam().Uid,UpdateRoleInfoName)
 	fmt.Println(str)
-	arr := Ws.GetWebSocket()
-	go Ws.Send(arr[3000],str)
+	Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	//arr := Ws.GetWebSocket()
+	//go Ws.Send(arr[14],str)
 }

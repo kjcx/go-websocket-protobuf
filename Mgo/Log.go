@@ -1,7 +1,6 @@
 package Mgo
 
 import (
-	"gopkg.in/mgo.v2"
 	"time"
 )
 
@@ -15,9 +14,10 @@ type Log struct {
 	Msg string //错误信息
 }
 //插入日志
-func InsertLog(session *mgo.Session, Data *Log){
-	mongo := session.DB("test").C("GoLog");
-	mongo.Insert(Data)
+func (Data *Log)InsertLog(){
+	mongo := Mongo()
+	c := mongo.DB("test").C("GoLog");
+	c.Insert(Data)
 }
 
 type LogResult struct {

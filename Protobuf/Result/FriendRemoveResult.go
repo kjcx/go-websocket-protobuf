@@ -9,7 +9,7 @@ import (
 )
 
 //删除好友返回1012
-func FriendRemoveResult(Uid int32,Data []byte) {
+func FriendRemoveResult(Uid int32,Data []byte) *AutoMsg.FriendRemoveResult{
 	FriendRemoveResult := &AutoMsg.FriendRemoveResult{}
 	proto.Unmarshal(Data,FriendRemoveResult)
 	Param,_ := json.Marshal(FriendRemoveResult)
@@ -21,6 +21,6 @@ func FriendRemoveResult(Uid int32,Data []byte) {
 		Date:time.Now(),
 		Msg:"无",
 	}
-	mongo := Mgo.Mongo()
-	Mgo.InsertLog(mongo,log)
+	log.InsertLog()
+	return FriendRemoveResult
 }

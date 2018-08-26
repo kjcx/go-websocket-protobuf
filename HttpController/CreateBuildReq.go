@@ -4,14 +4,18 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"WebSocket/Protobuf/Req"
-	"math/rand"
 	"fmt"
+	. "WebSocket/Common"
+	"encoding/json"
+	"WebSocket/Ws"
 )
-
+//创建公司
 func CreateBuildReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	ShopType := rand.Int31n(3) + int32(1)
-	Pos := rand.Int31n(3) + int32(1)
-	req := Req.CreateBuildReq(&Req.CreateBuild{Pos: Pos, AeraId: 1, ShopType: ShopType})
-	fmt.Println(req)
-	//go timeWriter(arr[3000],req)
+	param := HttpParam{R: r, Ps: ps}
+	CreateBuild := &Req.CreateBuild{}
+	json.Unmarshal(param.GetParam().Body,CreateBuild)
+	str := Req.CreateBuildReq(param.GetParam().Uid,CreateBuild)
+	Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	w.Write([]byte("创建公司返回"))
+	fmt.Println("创建公司返回")
 }
