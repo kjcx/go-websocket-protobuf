@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
+	"log"
 )
 
 func main() {
@@ -23,42 +24,53 @@ func GetRandomString(l int) string {
 	return string(result)
 }
 
+type Token struct {
+	Token string
+}
 
+type Result struct {
+	Data *Token
+	Msg  string
+}
 func HttpGet(httpurl string,key string) string {
 	//time.Sleep(time.Second * 1)
 	fmt.Println("key=>", key)
+	fmt.Println("httpurl=>", httpurl)
 	fmt.Println(time.Now())
 	url := fmt.Sprintf("http://%s%s%s", httpurl, "/Account/CKlogin?key=", key)
 	//url := "http://" + httpurl + "/Account/CKlogin?key=" + key
+	fmt.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		// handle error
+		log.Fatal("handle error http")
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
 		// handle error
+		log.Fatal("handle error Body")
+		return ""
+	}else {
+		//fmt.Println(string(body))
+
+		L := Result{}
+		err := json.Unmarshal([]byte(body), &L)
+		if err!=nil{
+			fmt.Println("err",err.Error())
+			return ""
+		}else{
+			return L.Data.Token
+		}
+
+		//fmt.Println(L.Data.Token)
+		//fmt.Println(L.Msg)
 	}
 
-	type Token struct {
-		Token string
-	}
 
-	type Result struct {
-		Data *Token
-		Msg  string
-	}
 
-	//fmt.Println(string(body))
 
-	L := Result{}
-	json.Unmarshal([]byte(body), &L)
-	fmt.Println(L.Data.Token)
-
-	return L.Data.Token
-	//fmt.Println(L.Data.Token)
-	//fmt.Println(L.Msg)
 
 }
 //通道发送消息

@@ -12,12 +12,14 @@ import (
 	"WebSocket/Protobuf/Result"
 	"WebSocket/Common"
 	"WebSocket/Model"
+	"encoding/json"
 )
 
 var arr   [30000]*websocket.Conn
 func GetWebSocket() [30000]*websocket.Conn{
 	return arr
 }
+var chan_req = make(chan []byte)
 //初始化ws
 func Init(addr string,httpurl string,start int,end int) {
 	fmt.Println("websocket：", addr)
@@ -31,6 +33,7 @@ func Init(addr string,httpurl string,start int,end int) {
 		Connect(i,addr,httpurl)//发起连接
 		go ForRead(i)//协程读取内容
 	}
+	go ChanMsgRead(chan_req)
 }
 //发起连接
 func Connect(i int,addr string,httpurl string) *websocket.Conn {
@@ -41,19 +44,25 @@ func Connect(i int,addr string,httpurl string) *websocket.Conn {
 	origin := fmt.Sprintf("Uid:%d",i)
 	fmt.Println(strconv.Itoa(i))
 	Token := Common.HttpGet(httpurl,strconv.Itoa(i))
-	var str = Req.ConnectingReq(1004, Token)
-	fmt.Println(str)
-	var err error
-	arr[i], err = websocket.Dial(url, "", origin)
+	if Token != "" {
+		var str = Req.ConnectingReq(1004, Token)
+		fmt.Println(str)
+		var err error
+		arr[i], err = websocket.Dial(url, "", origin)
 
-	if err != nil {
-		fmt.Println(err)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("arr=》")
+		fmt.Println(arr[i].Config().Origin)
+
+		go Send(arr[i], str)
+		return arr[i]
+	}else {
+		fmt.Println("获取token失败")
+		return arr[i]
 	}
-	fmt.Println("arr=》")
-	fmt.Println(arr[i].Config().Origin)
 
-	go Send(arr[i], str)
-	return arr[i]
 }
 
 
@@ -63,16 +72,21 @@ func ForRead(i int) {
 		var n int
 		var err error
 		if n, err = arr[i].Read(msg1); err != nil {
-			log.Fatal(err)
+			log.Fatal("接收信息出错",err.Error())
 		}
-		fmt.Printf("Received:", msg1, n)
+
+		fmt.Printf("Received:", n ,msg1)
 		Origin := arr[i].Config().Origin.String()
 		Uidstr,_ := strconv.Atoi(Origin[4:])
 		Uid := int32(Uidstr)
+		fmt.Println("uid:",Uid)
 		res := SendRev.Rev(Uid,msg1[:n])
 		go SwitchMsg(arr[i],Uid, res)
 
 	}
+
+
+
 }
 
 func Send(conn *websocket.Conn, data []byte) {
@@ -80,13 +94,30 @@ func Send(conn *websocket.Conn, data []byte) {
 }
 func timeWriterSend(conn *websocket.Conn, data []byte) {
 	for {
-		time.Sleep(time.Second*5)
+		time.Sleep(time.Second*1)
 		//time.Sleep(time.Microsecond * 1000000)
-		fmt.Println("发送时间:", time.Now())
+		fmt.Println(conn.Config().Origin,"发送时间:", time.Now())
 		websocket.Message.Send(conn, data)
 	}
 }
+//写入信息
+func ChanMsgWrite(Data []byte){
+	fmt.Println(Data)
+	chan_req <- Data
+}
 
+func ChanMsgRead(chan_req chan []byte){
+	for  {
+		select {
+		case msg :=<-chan_req:
+			go Send(arr[14],msg)
+			//执行websocket发送
+			fmt.Println("执行使用道具接口")
+			fmt.Println("The first case is selected.")
+
+		}
+	}
+}
 func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	switch res.GetMsgID() {
 	case 1057:
@@ -102,18 +133,22 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 			go Send(ws, str_role)
 		}
 		break
+	case 1060:
+		str_JoinGamReq := Req.JoinGameReq(1012)
+		go Send(ws, str_JoinGamReq)
 	case 1066:
 		//Redis.Insert(res.GetData())
 		strJoin := Result.JoinGameResult(res.GetData())
-		fmt.Println(strJoin.GetMission())
+		d,_:= json.Marshal(strJoin)
+		fmt.Println(string(d))
 		//测试请求 SignReq
 		data := Req.SignReq()
 		go Send(ws, data)
-		str_1106 := Req.ShopAllReq(1106)
-		go timeWriterSend(ws, str_1106)
-		var Name = Common.GetRandomString(3)
-		var str = Req.CreateCompanyReq(Name)
-		go Send(ws, str)
+		//str_1106 := Req.ShopAllReq(1106)
+		//go timeWriterSend(ws, str_1106)
+		//var Name = Common.GetRandomString(3)
+		//var str = Req.CreateCompanyReq(Name)
+		//go Send(ws, str)
 		break
 	case 1145:
 		str_1145 := Result.ShopAllResult(res.GetData())
@@ -163,6 +198,10 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	case 1012:
 		fmt.Println("删除好友返回")
 		Result.FriendRemoveResult(Uid,res.GetData())
+	case 1133:
+		fmt.Println("提升好感度返回")
+		Result.AddNpcRelationAdvanceResult(Uid,res.GetData())
+
 	default:
 		//go Test(ws)
 	}

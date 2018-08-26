@@ -34,10 +34,12 @@ func Mongo() *mgo.Session{
 	session, err := mgo.Dial("localhost:27017")
 	if err != nil {
 		panic(err)
-	}
-	//defer session.Close()
+	}else{
+		//defer session.Close()
 
-	// Optional. Switch the session to a monotonic behavior.
-	session.SetMode(mgo.Monotonic, true)
-	return session
+		// Optional. Switch the session to a monotonic behavior.
+		session.SetMode(mgo.Monotonic, true)
+		return session
+	}
+
 }

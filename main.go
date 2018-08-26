@@ -52,8 +52,11 @@ func main() {
 	router.GET("/hello/:name", Hello)
 	router.GET("/CreateBuildReq/:Pos/:AreaId/:ShopType", HttpController.CreateBuildReq)
 	router.GET("/UpdateRoleInfoNameReq/:name",HttpController.UpdateRoleInfoNameReq)
+	router.GET("/NpcRelationAdvanceReq/:name",HttpController.NpcRelationAdvanceReq)
+	router.GET("/AddNpcFavorabilityReq/:name",HttpController.AddNpcFavorabilityReq)
+	router.GET("/UseItemReq/:name",HttpController.UseItemReq)
 
-	log.Fatal(http.ListenAndServe(":3000", router))
+	log.Fatal(http.ListenAndServe(":3001", router))
 	//mux := http.NewServeMux()
 	//
 	//th := &timeHandler{format: time.RFC1123}
