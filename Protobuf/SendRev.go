@@ -20,7 +20,7 @@ func Send(MsgID int32,Data []byte) []byte {
 }
 //接收数据
 func Rev(Uid int32,Data []byte) *AutoMsg.MsgBaseSend {
-	fmt.Println("Uid",Uid,"data:",Data)
+
 	MsgRev := &AutoMsg.MsgBaseSend{}
 	err := proto.Unmarshal(Data, MsgRev)
 	if err != nil {
@@ -28,7 +28,7 @@ func Rev(Uid int32,Data []byte) *AutoMsg.MsgBaseSend {
 	}
 	MsgID := MsgRev.GetMsgID()
 	value :=  MsgRev.GetResult()
-
+	fmt.Println("MsgID",MsgID,"data:",Data)
 	if value > 0{
 		mongo := Mgo.Mongo()
 		result :=Mgo.WsResult(mongo,strconv.Itoa(int(value)))

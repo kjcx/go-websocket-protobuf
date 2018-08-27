@@ -116,7 +116,7 @@ func ChanMsgRead(chan_req chan SendChan){
 		case msg :=<-chan_req:
 			go Send(arr[msg.Uid],msg.Data)
 			//执行websocket发送
-			fmt.Println("执行使用道具接口",msg.Uid)
+			fmt.Println("执行chan接口",msg.Uid)
 		}
 	}
 }
@@ -221,6 +221,14 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	case 1118:
 		fmt.Println("加载员工返回")
 		Result.LoadStaffResult(Uid,res.GetData())
+	case 2038:
+		fmt.Println("赠送礼物返回")
+		Result.GiveGiftResult(Uid,res.GetData())
+	case 2056:
+		fmt.Println("礼物列表")
+		Result.GiveListResult(Uid,res.GetData())
+
+
 	default:
 		//go Test(ws)
 	}

@@ -60,6 +60,10 @@ func main() {
 	router.POST("/RefStaffReq/:name",HttpController.RefStaffReq)
 	router.POST("/ComeOutEmployeeReq/:name",HttpController.ComeOutEmployeeReq)
 	router.GET("/LoadStaffReq/:name",HttpController.LoadStaffReq)
+	router.POST("/GiveGiftReq/:name",HttpController.GiveGiftReq)
+	router.GET("/GiveListReq/:name",HttpController.GiveListReq)
+	router.POST("/FriendApplyReq/:name",HttpController.FriendApplyReq)
+	router.POST("/FriendAddReq/:name",HttpController.FriendAddReq)
 
 	log.Fatal(http.ListenAndServe(":3001", router))
 	//mux := http.NewServeMux()

@@ -31,7 +31,7 @@ func main() {
 }
 
 func Mongo() *mgo.Session{
-	session, err := mgo.Dial("mongodb://root:ckzc2018abcd@dds-2ze73f189700e204-pub.mongodb.rds.aliyuncs.com:3717/admin")
+	session, err := mgo.Dial("localhost:27017")
 	if err != nil {
 		panic(err)
 	}else{

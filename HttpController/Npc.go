@@ -11,7 +11,7 @@ import (
 )
 
 
-
+//提升品质返回
 func NpcRelationAdvanceReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	param := Common.HttpParam{R: r, Ps: ps}
 	data := &Req.NpcRelationAdvance{}

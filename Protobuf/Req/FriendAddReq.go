@@ -12,7 +12,7 @@ import (
 type FriendAdd struct {
 	RoleIds []string
 }
-//1022 批量申请好友
+//1022 通过好友请求
 func FriendAddReq(Uid int32,FriendAdd *FriendAdd) []byte{
 	FriendAddReq := &AutoMsg.FriendAddReq{
 		RoleIds: FriendAdd.RoleIds,
@@ -23,7 +23,7 @@ func FriendAddReq(Uid int32,FriendAdd *FriendAdd) []byte{
 	log := &Mgo.Log{
 		Uid:Uid,
 		MsgId: 1022,
-		Name: "批量申请好友请求",
+		Name: "通过好友请求",
 		Param: string(Param),
 		Date: time.Now(),
 		Msg: "",
