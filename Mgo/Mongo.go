@@ -5,6 +5,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"fmt"
 	"log"
+	"time"
 )
 type Person struct {
 	Name  string
@@ -31,7 +32,21 @@ func main() {
 }
 
 func Mongo() *mgo.Session{
-	session, err := mgo.Dial("localhost:27017")
+	dialInfo := &mgo.DialInfo{
+		Addrs:     []string{"192.168.31.232"},
+		Direct:    false,
+		Timeout:   time.Second * 1,
+		Database:  "test",
+		Source:    "admin",
+		Username:  "",
+		Password:  "",
+		PoolLimit: 4096, // Session.SetPoolLimit
+	}
+	session, err := mgo.DialWithInfo(dialInfo)
+	if nil != err {
+		panic(err)
+	}
+	//session, err := mgo.Dial("localhost:27017")
 	if err != nil {
 		panic(err)
 	}else{

@@ -40,8 +40,8 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 
-var addr = flag.String("ws", "192.168.31.64:9501", "http service address")
-var httpurl = flag.String("http", "192.168.31.64:9501", "http service address")
+var addr = flag.String("ws", "192.168.31.232:9501", "http service address")
+var httpurl = flag.String("http", "192.168.31.232:9501", "http service address")
 var start = flag.Int("start", 14, "key start")
 var end = flag.Int("end", 15, "key end")
 func main() {
