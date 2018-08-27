@@ -54,4 +54,23 @@ func FriendAddReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
 	w.Write([]byte("申请加好友返回"))
 }
-
+//拒绝申请好友
+func FriendApplyClearReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
+	param := Common.HttpParam{R: r, Ps: ps}
+	data := &Req.FriendApplyClear{}
+	json.Unmarshal(param.GetParam().Body,data)
+	str := Req.FriendApplyClearReq(param.GetParam().Uid,data)
+	fmt.Println(data)
+	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	w.Write([]byte("拒绝申请好友"))
+}
+//搜索好友
+func FriendSearchReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
+	param := Common.HttpParam{R: r, Ps: ps}
+	data := &Req.FriendSearch{}
+	json.Unmarshal(param.GetParam().Body,data)
+	str := Req.FriendSearchReq(param.GetParam().Uid,data)
+	fmt.Println(data)
+	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	w.Write([]byte("搜索好友"))
+}

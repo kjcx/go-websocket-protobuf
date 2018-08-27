@@ -40,8 +40,8 @@ func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 
-var addr = flag.String("ws", "192.168.31.232:9501", "http service address")
-var httpurl = flag.String("http", "192.168.31.232:9501", "http service address")
+var addr = flag.String("ws", "192.168.31.64:9501", "http service address")
+var httpurl = flag.String("http", "192.168.31.64:9501", "http service address")
 var start = flag.Int("start", 14, "key start")
 var end = flag.Int("end", 15, "key end")
 func main() {
@@ -64,6 +64,10 @@ func main() {
 	router.GET("/GiveListReq/:name",HttpController.GiveListReq)
 	router.POST("/FriendApplyReq/:name",HttpController.FriendApplyReq)
 	router.POST("/FriendAddReq/:name",HttpController.FriendAddReq)
+	router.POST("/FriendApplyClearReq/:name",HttpController.FriendApplyClearReq)
+	router.POST("/FriendSearchReq/:name",HttpController.FriendSearchReq)
+	router.GET("/GetTalentListReq/:name",HttpController.GetTalentListReq)
+	router.POST("/BuildLvUpReq/:name",HttpController.BuildLvUpReq)
 
 	log.Fatal(http.ListenAndServe(":3001", router))
 	//mux := http.NewServeMux()

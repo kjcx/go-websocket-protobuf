@@ -227,8 +227,15 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	case 2056:
 		fmt.Println("礼物列表")
 		Result.GiveListResult(Uid,res.GetData())
-
-
+	case 1176:
+		fmt.Println("人才市场列表返回")
+		Result.GetTalentListResult(Uid,res.GetData())
+	case 1004:
+		fmt.Println("升级店铺返回")
+		Result.BuildLvUpResult(Uid,res.GetData())
+	case 1063:
+		fmt.Println("出售店铺返回")
+		Result.DestoryBuildResult(Uid,res.GetData())
 	default:
 		//go Test(ws)
 	}
