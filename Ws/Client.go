@@ -25,30 +25,34 @@ type SendChan struct {
 	Data []byte
 }
 var chan_req = make(chan SendChan)
+var addr = *Common.Addr
+var httpurl = *Common.Httpurl
+var start = *Common.Start
+var end = *Common.End
 //初始化ws
-func Init(addr string,httpurl string,start int,end int) {
-	fmt.Println("websocket：", addr)
-	fmt.Println("http：", httpurl)
-	fmt.Println("http：", start)
-	fmt.Println("http：", end)
+func Init() {
+	fmt.Println("websocket：", Common.Addr)
+	fmt.Println("http：", Common.Httpurl)
+	fmt.Println("http：", Common.Start)
+	fmt.Println("http：", Common.End)
 	var ws *websocket.Conn
 	var i int
 	for i = start; i < end; i++ {
 		arr[i] = ws
-		Connect(i,addr,httpurl)//发起连接
+		Connect(i)//发起连接
 		go ForRead(i)//协程读取内容
 	}
 	go ChanMsgRead(chan_req)
 }
 //发起连接
-func Connect(i int,addr string,httpurl string) *websocket.Conn {
+func Connect(i int) *websocket.Conn {
 
 	fmt.Println("ccccc")
 	fmt.Println(addr,httpurl)
 	url := "ws://" + addr
 	origin := fmt.Sprintf("Uid:%d",i)
 	fmt.Println(strconv.Itoa(i))
-	Token := Common.HttpGet(httpurl,strconv.Itoa(i))
+	Token := Common.HttpGet(strconv.Itoa(i))
 	if Token != "" {
 		var str = Req.ConnectingReq(1004, Token)
 		fmt.Println(str)

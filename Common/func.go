@@ -13,11 +13,16 @@ import (
 	"net/http"
 	"github.com/julienschmidt/httprouter"
 	"strconv"
+	"flag"
 )
 
-func main() {
-	
-}
+
+var Addr = flag.String("ws", "192.168.31.232:9501", "http service address")
+var Httpurl = flag.String("http", "192.168.31.232:9501", "http service address")
+
+var Start = flag.Int("start", 14, "key start")
+var End = flag.Int("end", 15, "key end")
+
 func GetRandomString(l int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"
 	bytes := []byte(str)
@@ -37,12 +42,12 @@ type Result struct {
 	Data *Token
 	Msg  string
 }
-func HttpGet(httpurl string,key string) string {
+func HttpGet(key string) string {
 	//time.Sleep(time.Second * 1)
 	fmt.Println("key=>", key)
-	fmt.Println("httpurl=>", httpurl)
+	fmt.Println("httpurl=>", *Httpurl)
 	fmt.Println(time.Now())
-	url := fmt.Sprintf("http://%s%s%s", httpurl, "/Account/CKlogin?key=", key)
+	url := fmt.Sprintf("http://%s%s%s", *Httpurl, "/Account/CKlogin?key=", key)
 	//url := "http://" + httpurl + "/Account/CKlogin?key=" + key
 	fmt.Println(url)
 	resp, err := http.Get(url)
@@ -105,6 +110,31 @@ func Decode(Body io.Reader) []byte {
 func JsonFmt(st interface{}) string{
 	str,_ :=json.MarshalIndent(st,""," ")
 	return string(str)
+}
+
+
+//添加道具
+func AddItemSend(Uid int32,ItemId int32,Count int64) bool{
+	url := fmt.Sprintf("http://%s/Gm/addItem?uid=%s&itemId=%s&num=%s", *Httpurl,strconv.Itoa(int(Uid)),strconv.Itoa(int(ItemId)),strconv.Itoa(int(Count)) )
+	//url := "http://" + httpurl + "/Account/CKlogin?key=" + key
+	fmt.Println(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		// handle error
+		log.Fatal("handle error http")
+	}
+	defer resp.Body.Close()
+	ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		// handle error
+		log.Fatal("handle error Body")
+		return false
+	}else {
+		//fmt.Println(string(body))
+		return true
+
+	}
 }
 //通道发送消息
 func ReqChan(ch chan string,Str string) {
