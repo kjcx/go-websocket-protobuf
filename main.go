@@ -68,6 +68,13 @@ func main() {
 	router.GET("/GetTalentListReq/:name",HttpController.GetTalentListReq)
 	router.POST("/BuildLvUpReq/:name",HttpController.BuildLvUpReq)
 	router.POST("/AddItem/:name",HttpController.AddItem)
+	router.POST("/TalentHireReq/:name",HttpController.TalentHireReq)
+	router.GET("/TalentRefreshReq/:name",HttpController.TalentRefreshReq)
+	router.POST("/RequestManorReq/:name",HttpController.RequestManorReq)
+	router.GET("/ManorVisitInfoReq/:name",HttpController.ManorVisitInfoReq)
+	router.POST("/TalentFireReq/:name",HttpController.TalentFireReq)
+	router.POST("/CultivateEmployeeReq/:name",HttpController.CultivateEmployeeReq)
+	router.POST("/GetMapReq/:name",HttpController.GetMapReq)
 
 	log.Fatal(http.ListenAndServe(":3001", router))
 	//mux := http.NewServeMux()

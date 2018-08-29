@@ -37,3 +37,13 @@ func ComeOutEmployeeReq(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	w.Write([]byte("调入调出员工"))
 
 }
+//培训员工请求 1089
+func CultivateEmployeeReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
+	param := Common.HttpParam{R:r,Ps:ps}
+	data := &Req.CultivateEmployee{}
+	json.Unmarshal(param.GetParam().Body,data)
+	str := Req.CultivateEmployeeReq(param.GetParam().Uid,data)
+	Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	w.Write([]byte("培训员工请求"))
+
+}

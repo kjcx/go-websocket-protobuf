@@ -240,6 +240,28 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 	case 1063:
 		fmt.Println("出售店铺返回")
 		Result.DestoryBuildResult(Uid,res.GetData())
+	case 1178:
+		fmt.Println("解雇经理返回")
+		Result.TalentFireResult(Uid,res.GetData())
+	case 1182:
+		fmt.Println("刷新人才市场")
+		Result.TalentRefreshResult(Uid,res.GetData())
+	case 1121:
+		fmt.Println("培训员工请求")
+		Result.CultivateEmployeeResult(Uid,res.GetData())
+	case 1177:
+		fmt.Println("雇佣经理")
+		Result.TalentHireResult(Uid,res.GetData())
+	case 1082:
+		fmt.Println("庄园请求")
+		Result.RequestManorResult(Uid,res.GetData())
+	case 1201:
+		fmt.Println("拜访记录返回")
+		Result.ManorVisitInfoResult(Uid,res.GetData())
+
+
+
+
 	default:
 		//go Test(ws)
 	}
