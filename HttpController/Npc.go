@@ -8,6 +8,7 @@ import (
 	"WebSocket/Ws"
 	"encoding/json"
 	"WebSocket/Common"
+	"WebSocket/Mgo"
 )
 
 
@@ -55,5 +56,17 @@ func NpcFavorabilityReq(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	Ws.ChanMsgWrite(Ws.SendChan{Uid:param.GetParam().Uid, Data: str})
 	w.Write([]byte("加载npc请求"))
 	fmt.Println("加载npc请求")
+
+}
+
+//居民委托任务请求 1096
+func ResidentDelegateReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
+	param := Common.HttpParam{R: r, Ps: ps}
+	str := Req.ResidentDelegateReq(param.GetParam().Uid)
+	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	result:=Mgo.FindOne(param.GetParam().Uid,1134)
+	w.Header().Set("content-type", "application/json")
+	w.Write([]byte(result))
+	fmt.Println("居民委托任务请求")
 
 }

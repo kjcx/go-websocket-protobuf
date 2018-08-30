@@ -293,7 +293,9 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 		case 1019:
 			fmt.Println("移除黑名单返回",time.Now())
 			Result.FriendRemoveBlackResult(Uid,res.GetData())
-
+		case 1134:
+			fmt.Println("居民委托任务返回",time.Now())
+			Result.ResidentDelegateResult(Uid,res.GetData())
 		default:
 			//go Test(ws)
 		}
