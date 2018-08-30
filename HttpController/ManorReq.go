@@ -25,7 +25,6 @@ func RequestManorReq(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 func ManorVisitInfoReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
 	param := Common.HttpParam{R: r, Ps: ps}
 	str := Req.ManorVisitInfoReq(param.GetParam().Uid)
-	fmt.Println(data)
 	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
 	w.Write([]byte("拜访请求"))
 }

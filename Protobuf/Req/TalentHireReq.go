@@ -6,6 +6,7 @@ import (
 	"WebSocket/Protobuf"
 	"WebSocket/Mgo"
 	"time"
+	"encoding/json"
 )
 
 type TalentHire struct {
@@ -19,6 +20,7 @@ func TalentHireReq(Uid int32,TalentHire *TalentHire) []byte{
 		RoleId: TalentHire.RoleId,
 	}
 	Data,_ := proto.Marshal(TalentHireReq)
+	Param,_ := json.Marshal(TalentHireReq)
 	log := Mgo.Log{
 		Uid:   Uid,
 		MsgId: 1131,

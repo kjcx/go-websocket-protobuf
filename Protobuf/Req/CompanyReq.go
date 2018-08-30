@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-func main() {
-	
+type CreateCompany struct {
+	Name string
 }
 //创建公司请求
-func CreateCompanyReq(Uid int32,Name string) []byte{
+func CreateCompanyReq(Uid int32,CreateCompany *CreateCompany) []byte{
 	CreateCompanyReq := &AutoMsg.CreateCompanyReq{
-		Name:Name,
+		Name:CreateCompany.Name,
 	}
 	Data,_ := proto.Marshal(CreateCompanyReq)
 	Param,_ := json.Marshal(CreateCompanyReq)

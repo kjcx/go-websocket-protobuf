@@ -44,9 +44,10 @@ func Rev(Uid int32,Data []byte) *AutoMsg.MsgBaseSend {
 		log.InsertLog()
 		fmt.Println("有错误消息")
 	}else{
+		fmt.Println(MsgID)
+		//MsgRev.GetData()
 
 	}
-	fmt.Println(MsgID)
-	//MsgRev.GetData()
 	return MsgRev
+
 }

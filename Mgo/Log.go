@@ -2,6 +2,8 @@ package Mgo
 
 import (
 	"time"
+	"gopkg.in/mgo.v2/bson"
+	"fmt"
 )
 
 
@@ -25,3 +27,17 @@ type LogResult struct {
 	Data []byte
 }
 
+
+func  FindOne(Uid int32,MsgId int32) string{
+	mongo := Mongo()
+	c := mongo.DB("test").C("GoLog");
+	result := &Log{}
+	c.Find(bson.M{"msgid": MsgId}).Sort("-date").One(result)
+	fmt.Println(result)
+	if(result.Msg != "无"){
+		return result.Msg
+	}else{
+		return result.Param
+	}
+
+}

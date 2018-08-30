@@ -1,7 +1,7 @@
 package Result
 
 import (
-	"github.com/golang/protobuf/proto/test"
+	"github.com/golang/protobuf/proto/test_proto"
 	"github.com/golang/protobuf/proto"
 	"encoding/json"
 	"WebSocket/Mgo"

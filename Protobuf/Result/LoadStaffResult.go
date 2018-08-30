@@ -23,9 +23,5 @@ func LoadStaffResult(Uid int32,Data []byte) *AutoMsg.LoadStaffResult {
 		Msg:"无",
 	}
 	log.InsertLog()
-
-	//for _,v := range LoadStaffResult.LoadRefStaffList{
-	//	fmt.Println(v)
-	//}
 	return LoadStaffResult
 }
