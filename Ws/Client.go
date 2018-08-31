@@ -296,6 +296,15 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 		case 1134:
 			fmt.Println("居民委托任务返回",time.Now())
 			Result.ResidentDelegateResult(Uid,res.GetData())
+		case 1091:
+			fmt.Println("偷菜返回",time.Now())
+			Result.StealSemenResult(Uid,res.GetData())
+		case 2014:
+			fmt.Println("随机请求庄园返回")
+			Result.RandManorResult(Uid,res.GetData())
+		case 1110:
+			fmt.Println("庄园购买地块返回")
+			Result.AddSoilResult(Uid,res.GetData())
 		default:
 			//go Test(ws)
 		}

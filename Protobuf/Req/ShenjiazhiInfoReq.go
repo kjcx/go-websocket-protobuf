@@ -11,7 +11,7 @@ import (
 //身价值明细请求请求 2049
 func ShenjiazhiInfoReq(Uid int32) []byte {
 	ShenjiazhiInfoReq := &AutoMsg.ShenjiazhiInfoReq{}
-	proto.Marshal(ShenjiazhiInfoReq)
+	Data,_ := proto.Marshal(ShenjiazhiInfoReq)
 	Param,_ := json.Marshal(ShenjiazhiInfoReq)
 	log := Mgo.Log{
 		Uid:   Uid,

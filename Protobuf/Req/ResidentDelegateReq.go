@@ -11,7 +11,7 @@ import (
 //居民委托任务请求 1096
 func ResidentDelegateReq(Uid int32) []byte {
 	ResidentDelegateReq := &AutoMsg.ResidentDelegateReq{}
-	Data,_ = proto.Marshal(ResidentDelegateReq)
+	Data,_ := proto.Marshal(ResidentDelegateReq)
 	Param,_ := json.Marshal(ResidentDelegateReq)
 	log :=Mgo.Log{
 		Uid:   Uid,

@@ -84,6 +84,8 @@ func main() {
 	router.POST("/ReadMailReq/:name",HttpController.ReadMailReq)//阅读邮件请求
 	router.POST("/GetMailItemsReq/:name",HttpController.GetMailItemsReq)//一键获取邮件物品请求
 	router.POST("/DelMailsReq/:name",HttpController.DelMailsReq)//一键获取邮件物品请求
+	router.POST("/RandManorReq/:name",HttpController.RandManorReq)//随机庄园请求
+	router.POST("/StealSemenReq/:name",HttpController.StealSemenReq)//偷菜请求
 
 
 	log.Fatal(http.ListenAndServe(":3001", router))
