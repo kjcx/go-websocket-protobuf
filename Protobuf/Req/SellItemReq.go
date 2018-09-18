@@ -10,7 +10,7 @@ import (
 )
 type SellItem struct {
 	ItemId int32
-	Count int64
+	Count int32
 }
 //出售道具 1014
 func SellItemReq(Uid int32,SellItem *SellItem) []byte{

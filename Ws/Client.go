@@ -6,13 +6,13 @@ import (
 	"strconv"
 	"time"
 	"github.com/golang/protobuf/proto/test_proto"
-	"log"
 	"WebSocket/Protobuf/Req"
 	"WebSocket/Protobuf"
 	"WebSocket/Common"
 	"WebSocket/Protobuf/Result"
 	"encoding/json"
 	"WebSocket/Model"
+	"log"
 )
 
 var arr   [30000]*websocket.Conn
@@ -66,6 +66,8 @@ func Connect(i int) *websocket.Conn {
 		fmt.Println(arr[i].Config().Origin)
 
 		go Send(arr[i], str)
+
+		go HeartbeatSend(arr[i],int32(i))//发送心跳
 		return arr[i]
 	}else {
 		fmt.Println("获取token失败")
@@ -81,7 +83,11 @@ func ForRead(i int) {
 		var n int
 		var err error
 		if n, err = arr[i].Read(msg1); err != nil {
-			log.Fatal("接收信息出错",err.Error())
+			fmt.Println("接收信息出错",err,msg1)
+
+			if arr[i].IsClientConn() {
+				log.Fatal("连接已断开",err.Error())
+			}
 		}
 
 		fmt.Printf("Received:", n ,msg1)
@@ -91,6 +97,7 @@ func ForRead(i int) {
 		fmt.Println("uid:",Uid)
 		res := SendRev.Rev(Uid,msg1[:n])
 		go SwitchMsg(arr[i],Uid, res)
+
 
 	}
 
@@ -107,6 +114,15 @@ func timeWriterSend(conn *websocket.Conn, data []byte) {
 		//time.Sleep(time.Microsecond * 1000000)
 		fmt.Println(conn.Config().Origin,"发送时间:", time.Now())
 		websocket.Message.Send(conn, data)
+	}
+}
+//心跳每30秒发一次
+func HeartbeatSend(conn *websocket.Conn,Uid int32) {
+	for {
+		time.Sleep(time.Second*30)
+		//time.Sleep(time.Microsecond * 1000000)
+		data := Req.HeartbeatReq(Uid)
+		go Send(conn,data)
 	}
 }
 //写入信息
@@ -305,6 +321,12 @@ func SwitchMsg(ws *websocket.Conn, Uid int32,res *AutoMsg.MsgBaseSend) {
 		case 1110:
 			fmt.Println("庄园购买地块返回")
 			Result.AddSoilResult(Uid,res.GetData())
+		case 1064:
+			fmt.Println("大地图",time.Now())
+			Result.GetMapResult(Uid,res.GetData())
+		case 1192:
+			fmt.Println("自己公有区店铺返回",time.Now())
+			Result.PublicRoleShopResult(Uid,res.GetData())
 		default:
 			//go Test(ws)
 		}

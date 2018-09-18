@@ -16,12 +16,13 @@ import (
 	"flag"
 )
 
-
+//
+//var Addr = flag.String("ws", "slb.ckp520.cn:9501", "http service address")
+//var Httpurl = flag.String("http", "slb.ckp520.cn:9501", "http service address")
 var Addr = flag.String("ws", "192.168.31.232:9501", "http service address")
 var Httpurl = flag.String("http", "192.168.31.232:9501", "http service address")
-
-var Start = flag.Int("start", 14, "key start")
-var End = flag.Int("end", 15, "key end")
+var Start = flag.Int("start", 211, "key start")
+var End = flag.Int("end", 212, "key end")
 
 func GetRandomString(l int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyz"

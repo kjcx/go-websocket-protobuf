@@ -10,7 +10,7 @@ import (
 )
 
 type GiveGift struct {
-	ItemCount            map[int32]int64
+	ItemCount            map[int32]int32
 	RoleId               int32
 }
 //赠送礼物 2038

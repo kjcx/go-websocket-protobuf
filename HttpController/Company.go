@@ -52,7 +52,7 @@ func TalentFireReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
 	w.Write([]byte("解雇经理请求"))
 }
-//请求竞拍土地
+//请求竞拍土地 1011
 func GetMapReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
 	param := Common.HttpParam{R: r, Ps: ps}
 	data := &Req.GetMap{}
@@ -60,7 +60,10 @@ func GetMapReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
 	str := Req.GetMapReq(param.GetParam().Uid,data)
 	fmt.Println(data)
 	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
-	w.Write([]byte("请求竞拍土地"))
+	result:=Mgo.FindOne(param.GetParam().Uid,1064)
+	w.Header().Set("content-type", "application/json")
+	w.Write([]byte(result))
+	fmt.Println("请求竞拍土地")
 }
 
 
@@ -77,6 +80,8 @@ func TalentRefreshReq(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 func CreateBuildReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
 	param := Common.HttpParam{R: r, Ps: ps}
 	data := &Req.CreateBuild{}
+	json.Unmarshal(param.GetParam().Body,data)
+	fmt.Println(data)
 	str := Req.CreateBuildReq(param.GetParam().Uid,data)
 	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
 	//1058
@@ -140,6 +145,17 @@ func MyLandInfoReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	w.Header().Set("content-type", "application/json")
 	w.Write([]byte(result))
 	fmt.Println("自己竞拍列表请求")
+
+}
+//自己公有区店铺 1141
+func PublicRoleShopReq(w http.ResponseWriter, r *http.Request, ps httprouter.Params){
+	param := Common.HttpParam{R: r, Ps: ps}
+	str := Req.PublicRoleShopReq(param.GetParam().Uid)
+	go Ws.ChanMsgWrite(Ws.SendChan{Uid: param.GetParam().Uid, Data: str})
+	result:=Mgo.FindOne(param.GetParam().Uid,1192)
+	w.Header().Set("content-type", "application/json")
+	w.Write([]byte(result))
+	fmt.Println("自己公有区店铺")
 
 }
 
